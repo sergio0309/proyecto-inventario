@@ -12,7 +12,10 @@ class CategoriesController extends Controller
      */
     public function index()
     {
-        //
+
+        $categories = categories:: all();
+
+        return view('categories.index', compact('categories'));
     }
 
     /**
@@ -20,7 +23,7 @@ class CategoriesController extends Controller
      */
     public function create()
     {
-        //
+        return view('categories.create');
     }
 
     /**
@@ -28,7 +31,13 @@ class CategoriesController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $category = new categories();
+
+        $category->name = $request->name;
+        $category->image = $request->image->store("images", "public");
+
+        $category->save();
+        return redirect('/categories');
     }
 
     /**
@@ -42,24 +51,40 @@ class CategoriesController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(categories $categories)
+    public function edit(string $id)
     {
-        //
+        $category = categories::find($id);
+
+        return view('categories.edit', compact('category'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, categories $categories)
+    public function update(Request $request, string $id)
     {
-        //
+        $category = categories::find($id);
+
+        $category->name = $request->name;
+
+        if( $request->hasFile('image') ){
+            // $category->image->destroy();
+            $category->image = $request->image->store("images", "public");
+        }
+        $category->save();
+
+        return redirect('/categories');
+
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(categories $categories)
+    public function destroy(string $id)
     {
-        //
+        $category = categories::find($id);
+        $category->delete();
+
+        return redirect('/categories');
     }
 }
